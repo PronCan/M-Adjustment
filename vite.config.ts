@@ -12,9 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: '아웃캐스트 관람 기록',
-        short_name: '아웃캐스트',
-        description: '아웃캐스트 연극 관람 기록 및 재관람 카드 관리 앱',
+        name: 'adjust',
+        short_name: 'adjust',
+        description: 'adjust 앱',
         theme_color: '#84643E',
         background_color: '#f7f3ee',
         display: 'standalone',
@@ -39,5 +39,5 @@ export default defineConfig({
       }
     })
   ],
-  base: '/Outcast_2026/', // For GitHub Pages (assuming the same repo name or change later)
+  base: '/adjust/', // For GitHub Pages (assuming the same repo name or change later)
 });

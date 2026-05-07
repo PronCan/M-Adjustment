@@ -12,7 +12,7 @@ let dbPromise: Promise<IDBPDatabase<ReceiptDB>> | null = null;
 
 function getDB() {
   if (!dbPromise) {
-    dbPromise = openDB<ReceiptDB>('outcast_receipts_db', 1, {
+    dbPromise = openDB<ReceiptDB>('adjust_receipts_db', 1, {
       upgrade(db) {
         db.createObjectStore('receipts');
       },
@@ -43,7 +43,7 @@ export async function clearReceiptDB(): Promise<void> {
     dbPromise = null;
   }
   await new Promise<void>((resolve, reject) => {
-    const req = indexedDB.deleteDatabase('outcast_receipts_db');
+    const req = indexedDB.deleteDatabase('adjust_receipts_db');
     req.onsuccess = () => resolve();
     req.onerror = () => reject(req.error);
     req.onblocked = () => resolve();

@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { useAppStore } from '../../store/useAppStore';
-import { SEAT_LAYOUT } from '../../config/seatLayout';
+import { SEAT_LAYOUT_DREAM2, SEAT_LAYOUT_BUGS, SEAT_LAYOUT_PAYCO } from '../../config/seatLayout';
 
-export function Heatmap() {
+export function Heatmap({ layout }: { layout: 'dream2' | 'bugs' | 'payco' }) {
   const schedules = useAppStore((state) => state.schedules);
 
   const seatCounts = useMemo(() => {
@@ -31,7 +31,7 @@ export function Heatmap() {
         <div className="seatmap-stage">STAGE</div>
         <div className="seatmap-stage-foot"></div>
         
-        {SEAT_LAYOUT.map((row) => (
+        {layout === 'dream2' ? SEAT_LAYOUT_DREAM2.map((row) => (
           <div key={row.row} className="seatmap-row" style={{ display: 'flex', alignItems: 'center', gap: '2px', marginBottom: '3px' }}>
             <div className="seatmap-lbl">{row.row}</div>
             {row.groups.map((group, gIdx) => (
@@ -63,7 +63,60 @@ export function Heatmap() {
               </div>
             ))}
           </div>
-        ))}
+          )) : layout === 'bugs' ? SEAT_LAYOUT_BUGS.map((row) => (
+          <div key={row.row} className="seatmap-row" style={{ display: 'flex', alignItems: 'center', gap: '2px', marginBottom: '3px' }}>
+            <div className="seatmap-lbl">{row.row}</div>
+            {row.groups.map((group, gIdx) => (
+              <div key={gIdx} style={{ display: 'flex', gap: '2px' }}>
+                {Array.from({ length: group[1] - group[0] + 1 }, (_, i) => {
+                  const num = group[0] + i;
+                  const seatKey = `${row.row}${num}`;
+                  const count = seatCounts[seatKey] || 0;
+                  return (
+                    <div 
+                      key={num} 
+                      className={`seatmap-seat ${getHeatmapClass(count)}`}
+                      title={`${seatKey} (${count}회)`}
+                      style={{
+                        width: '17px', height: '17px', 
+                        borderRadius: '4px 4px 2px 2px',
+                        border: '1px solid var(--border)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: count > 0 ? '7px' : '0',
+                        fontWeight: 700,
+                        position: 'relative'
+                      }}
+                    >
+                      {count > 0 ? count : ''}
+                    </div>
+                  );
+                })}
+                {gIdx < row.groups.length - 1 && <div className="seatmap-aisle" style={{ width: '14px' }}></div>}
+              </div>
+            ))}
+          </div>
+        )) : layout === 'payco' ? SEAT_LAYOUT_PAYCO.map((row) => (
+          <div key={row.row} className="seatmap-row" style={{ display: 'flex', alignItems: 'center', gap: '2px', marginBottom: '3px' }}>
+            <div className="seatmap-lbl">{row.row}</div>
+            {row.groups.map((group, gIdx) => (
+              <div key={gIdx} style={{ display: 'flex', gap: '2px' }}>
+                {Array.from({ length: group[1] - group[0] + 1 }, (_, i) => {
+                  const num = group[0] + i;
+                  const seatKey = `${row.row}${num}`;
+                  const count = seatCounts[seatKey] || 0;
+                  return (
+                    <div 
+                      key={num} 
+                      className={`seatmap-seat ${getHeatmapClass(count)}`}
+                      title={`${seatKey} (${count}회)`}
+                      style={{
+                        width: '17px', height: '17px', 
+                        borderRadius: '4px 4px 2px 2px',
+                        border: '1px solid var(--border)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: count > 0 ? '7px' : '0',
+                        fontWeight: 700,
+                        position: 'relative'
       </div>
     </div>
   );

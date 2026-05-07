@@ -1,13 +1,14 @@
 export const APP_CONFIG = {
-  title: '아웃캐스트 관람 기록',
+  title: '뮤지컬 관람 기록',
   themeColor: '#84643E',
-  defaultEmoji: '🕊️',
-  availableEmojis: ['🕊️', '🦋', '🦌'],
+  defaultEmoji: '🛳️',
+  availableEmojis: ['🛳️', '🛥️', '🚢'],
   
   // 캐스트 정보
   cast: {
-    alex: { role: '알렉산드로스', actors: ['이승준', '이세헌', '함태규'] },
-    philos: { role: '필로스', actors: ['이동연', '박경호', '차규민'] }
+    woojin: { role: '김우진', actors: ['온주완', '임준혁', '선한국', '이진혁'] },
+    simdeok: { role: '윤심덕', actors: ['최연우', '여은', '정우연', '김수연'] },
+    sane: { role: '사내', actors: ['김지온', '유현석', '원태민', '김찬종'] }
   },
 
   // 할인 종류
@@ -23,14 +24,14 @@ export const APP_CONFIG = {
 
   // 재관람 혜택
   rewatchBenefits: [
-    { count: 3, label: '40% 할인권 2장 🎫' },
     { count: 5, label: '폴라 📸' },
-    { count: 7, label: '50% 할인권 + OST 🎶' }
+    { count: 7, label: 'OST 🎶' }
   ]
 };
 
 export function getRoleByActor(name: string): string | null {
-  if (APP_CONFIG.cast.alex.actors.includes(name)) return APP_CONFIG.cast.alex.role;
-  if (APP_CONFIG.cast.philos.actors.includes(name)) return APP_CONFIG.cast.philos.role;
+  if (APP_CONFIG.cast.woojin.actors.includes(name)) return APP_CONFIG.cast.woojin.role;
+  if (APP_CONFIG.cast.simdeok.actors.includes(name)) return APP_CONFIG.cast.simdeok.role;
+  if (APP_CONFIG.cast.sane.actors.includes(name)) return APP_CONFIG.cast.sane.role;
   return null;
 }

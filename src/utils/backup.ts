@@ -29,5 +29,5 @@ export function readJsonFile(file: File): Promise<any> {
 }
 
 export function getBackupFilename() {
-  return `outcast_backup_${format(new Date(), 'yyyyMMdd_HHmmss')}.json`;
+  return `adjust_backup_${format(new Date(), 'yyyyMMdd_HHmmss')}.json`;
 }

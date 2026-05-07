@@ -205,7 +205,7 @@ export const useAppStore = create<AppState>()(
       restoreData: (data) => set((state) => ({ ...state, ...data }))
     }),
     {
-      name: 'outcast_app_state',
+      name: 'adjust_app_state',
     }
   )
 );
