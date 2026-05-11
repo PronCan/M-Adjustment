@@ -1,37 +1,37 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #f7f3ee;
-  --color-surface: #fffcf8;
-  --color-surface2: #f0e9df;
-  --color-text: #2c1f0e;
-  --color-text2: #7a6248;
-  --color-border: #ddd0bc;
-  --color-primary: #84643E;
-  --color-primary-l: #b08a5e;
-  --color-accent: #c0865a;
+  --color-bg: #f4f9f6;
+  --color-surface: #ffffff;
+  --color-surface2: #e8f2ec;
+  --color-text: #2d3b33;
+  --color-text2: #6b8274;
+  --color-border: #cce0d5;
+  --color-primary: #8abf9f;
+  --color-primary-l: #dbebe1;
+  --color-accent: #7ab896;
   --color-success: #5a8c6a;
-  --color-warn: #c49a3c;
-  --color-danger: #b85c4a;
-  --color-nav: #fffcf8;
+  --color-warn: #c4a93c;
+  --color-danger: #b86b5a;
+  --color-nav: #ffffff;
 }
 
 @layer base {
   :root {
-    --bg: #f7f3ee;
-    --surface: #fffcf8;
-    --surface2: #f0e9df;
-    --text: #2c1f0e;
-    --text2: #7a6248;
-    --border: #ddd0bc;
-    --primary: #84643E;
-    --primary-l: #b08a5e;
-    --accent: #c0865a;
+    --bg: #f4f9f6;
+    --surface: #ffffff;
+    --surface2: #e8f2ec;
+    --text: #2d3b33;
+    --text2: #6b8274;
+    --border: #cce0d5;
+    --primary: #8abf9f;
+    --primary-l: #dbebe1;
+    --accent: #7ab896;
     --success: #5a8c6a;
-    --warn: #c49a3c;
-    --danger: #b85c4a;
-    --nav: #fffcf8;
-    --shadow: 0 2px 12px rgba(132, 100, 62, 0.10);
+    --warn: #c4a93c;
+    --danger: #b86b5a;
+    --nav: #ffffff;
+    --shadow: 0 2px 12px rgba(138, 191, 159, 0.15);
     --radius-sm: 10px;
     --radius-md: 14px;
     --radius-lg: 20px;
@@ -39,19 +39,19 @@
   }
 
   .dark {
-    --bg: #1a1208;
-    --surface: #261a0e;
-    --surface2: #1f1509;
-    --text: #f0e4d0;
-    --text2: #a8896a;
-    --border: #3e2e1a;
-    --primary: #c49a6a;
-    --primary-l: #84643E;
-    --accent: #d4a07a;
+    --bg: #121a15;
+    --surface: #1a261f;
+    --surface2: #23332a;
+    --text: #e6f0ea;
+    --text2: #9eb3a6;
+    --border: #2f4538;
+    --primary: #dbebe1;
+    --primary-l: #8abf9f;
+    --accent: #a3d1b5;
     --success: #6aaa7a;
-    --warn: #d4aa4a;
-    --danger: #cc7060;
-    --nav: #261a0e;
+    --warn: #d4bb4a;
+    --danger: #cc7a6a;
+    --nav: #1a261f;
     --shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
   }
 
@@ -224,7 +224,7 @@
     opacity: 0.85;
   }
 
-  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary { background: var(--primary); color: var(--bg); }
   .btn-secondary { background: var(--surface2); color: var(--text); }
   .btn-danger { background: var(--danger); color: #fff; }
   .btn-success { background: var(--success); color: #fff; }

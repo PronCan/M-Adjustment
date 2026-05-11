@@ -1,12 +1,9 @@
-import { useAppStore } from '../../store/useAppStore';
-import { Card, SecTitle } from '../ui';
+import { SecTitle } from '../ui';
 
 export function HomeTab() {
-  const { coupons } = useAppStore();
-
   return (
     <div className="tab-page active">
-      <Card label="🎟 할인권 현황">
+      {/* <Card label="🎟 할인권 현황">
         <div className="coupon-grid">
           <div className="coupon-box forty">
             <div className="coupon-count">{coupons.forty}</div>
@@ -21,12 +18,12 @@ export function HomeTab() {
             <div className="coupon-name">증빙패스</div>
           </div>
         </div>
-      </Card>
+      </Card> */}
 
       <SecTitle>📑 재관람카드</SecTitle>
       {/* Rewatch cards list will go here */}
       
-      <SecTitle>📌 예매 확정 내역</SecTitle>
+      {/* <SecTitle>📌 예매 확정 내역</SecTitle> */}
       {/* Confirmed schedules will go here */}
     </div>
   );

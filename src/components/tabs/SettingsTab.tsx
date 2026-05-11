@@ -123,10 +123,7 @@ export function SettingsTab() {
       <Card label="ℹ️ 앱 정보">
         <div style={{ fontSize: '12px', color: 'var(--text2)', lineHeight: 1.6 }}>
           {APP_CONFIG.title} 앱<br/>
-          재관람카드 도장 시스템:<br/>
-          {APP_CONFIG.rewatchBenefits.map(b => (
-            <div key={b.count}>&nbsp;• {b.count}회차 → {b.label}</div>
-          ))}
+          (극 별 재관람 혜택은 홈 탭에서 확인하세요)
         </div>
       </Card>
     </div>

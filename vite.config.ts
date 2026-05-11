@@ -15,8 +15,8 @@ export default defineConfig({
         name: 'adjust',
         short_name: 'adjust',
         description: 'adjust 앱',
-        theme_color: '#84643E',
-        background_color: '#f7f3ee',
+        theme_color: '#dbebe1',
+        background_color: '#f4f9f6',
         display: 'standalone',
         icons: [
           {

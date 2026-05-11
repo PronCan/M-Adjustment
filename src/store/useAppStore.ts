@@ -1,16 +1,17 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { APP_CONFIG } from '../config';
+import { APP_CONFIG, DEFAULT_PLAYS } from '../config';
+import type { PlayConfig } from '../config';
 
 export interface Schedule {
   id: string;
+  playId: string;
   date: string;
   time: string;
   holiday: boolean;
   seatRow: string;
   seatNum: string;
-  castAlex: string;
-  castPhilos: string;
+  cast: Record<string, string>;
   event: string;
   discount: string;
   memo: string;
@@ -33,6 +34,7 @@ export interface Stamp {
 
 export interface RewatchCard {
   id: string;
+  playId: string;
   name: string;
   stamps: Stamp[];
   rewards: number[];
@@ -47,6 +49,8 @@ export interface CouponLog {
 }
 
 export interface AppState {
+  plays: PlayConfig[];
+  activePlayId: string | null;
   schedules: Schedule[];
   rewatchCards: RewatchCard[];
   coupons: {
@@ -64,11 +68,16 @@ export interface AppState {
   };
   
   // Actions
+  addPlay: (play: PlayConfig) => void;
+  updatePlay: (id: string, play: Partial<PlayConfig>) => void;
+  deletePlay: (id: string) => void;
+  setActivePlayId: (id: string) => void;
+
   addSchedule: (schedule: Schedule) => void;
   updateSchedule: (id: string, schedule: Partial<Schedule>) => void;
   deleteSchedule: (id: string) => void;
   
-  addRewatchCard: (name: string) => void;
+  addRewatchCard: (playId: string, name: string) => void;
   deleteRewatchCard: (id: string) => void;
   addStamp: (cardId: string, stamp: Stamp) => void;
   updateStamp: (cardId: string, stampId: string, stamp: Partial<Stamp>, newCardId?: string) => void;
@@ -87,6 +96,8 @@ export interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
+      plays: DEFAULT_PLAYS,
+      activePlayId: DEFAULT_PLAYS[0].id,
       schedules: [],
       rewatchCards: [],
       coupons: { forty: 0, fifty: 0, proofpass: 0 },
@@ -99,6 +110,19 @@ export const useAppStore = create<AppState>()(
         activeTab: 'home',
       },
 
+      addPlay: (play) => set((state) => ({ plays: [...state.plays, play] })),
+      updatePlay: (id, updated) => set((state) => ({
+        plays: state.plays.map(p => p.id === id ? { ...p, ...updated } : p)
+      })),
+      deletePlay: (id) => set((state) => {
+        const newPlays = state.plays.filter(p => p.id !== id);
+        return {
+          plays: newPlays,
+          activePlayId: state.activePlayId === id ? (newPlays[0]?.id || null) : state.activePlayId
+        };
+      }),
+      setActivePlayId: (id) => set({ activePlayId: id }),
+
       addSchedule: (schedule) => set((state) => ({ schedules: [...state.schedules, schedule] })),
       updateSchedule: (id, updated) => set((state) => ({
         schedules: state.schedules.map(s => s.id === id ? { ...s, ...updated } : s)
@@ -107,8 +131,8 @@ export const useAppStore = create<AppState>()(
         schedules: state.schedules.filter(s => s.id !== id)
       })),
 
-      addRewatchCard: (name) => set((state) => ({
-        rewatchCards: [...state.rewatchCards, { id: Date.now().toString(), name, stamps: [], rewards: [] }]
+      addRewatchCard: (playId, name) => set((state) => ({
+        rewatchCards: [...state.rewatchCards, { id: Date.now().toString(), playId, name, stamps: [], rewards: [] }]
       })),
       deleteRewatchCard: (id) => set((state) => ({
         rewatchCards: state.rewatchCards.filter(c => c.id !== id)
@@ -120,7 +144,6 @@ export const useAppStore = create<AppState>()(
         let cards = [...state.rewatchCards];
         
         if (newCardId && newCardId !== cardId) {
-          // Move stamp to new card
           const oldCard = cards.find(c => c.id === cardId);
           const stampToMove = oldCard?.stamps.find(s => s.id === stampId);
           if (stampToMove) {
@@ -132,7 +155,6 @@ export const useAppStore = create<AppState>()(
             });
           }
         } else {
-          // Update in same card
           cards = cards.map(c => c.id === cardId ? {
             ...c,
             stamps: c.stamps.map(s => s.id === stampId ? { ...s, ...updated } : s)
@@ -195,6 +217,8 @@ export const useAppStore = create<AppState>()(
       setShowSchedule: (data) => set({ showSchedule: data }),
 
       resetAll: () => set({
+        plays: DEFAULT_PLAYS,
+        activePlayId: DEFAULT_PLAYS[0].id,
         schedules: [],
         rewatchCards: [],
         coupons: { forty: 0, fifty: 0, proofpass: 0 },

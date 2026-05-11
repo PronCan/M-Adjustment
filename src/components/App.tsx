@@ -5,10 +5,9 @@ import { ScheduleTab } from './tabs/ScheduleTab';
 import { CouponTab } from './tabs/CouponTab';
 import { StatsTab } from './tabs/StatsTab';
 import { SettingsTab } from './tabs/SettingsTab';
-import { APP_CONFIG } from '../config';
 
 function App() {
-  const { settings, updateSettings } = useAppStore();
+  const { settings, updateSettings, plays, activePlayId, setActivePlayId } = useAppStore();
   useDarkMode();
 
   const renderTab = () => {
@@ -25,8 +24,24 @@ function App() {
   return (
     <>
       <header className="app-header">
-        <div className="app-title">
-          <span>{settings.titleEmoji}</span> {APP_CONFIG.title}
+        <div className="app-title" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span>{settings.titleEmoji}</span>
+          <select 
+            value={activePlayId || ''} 
+            onChange={(e) => setActivePlayId(e.target.value)}
+            style={{ 
+              border: 'none', 
+              background: 'transparent', 
+              fontSize: '18px', 
+              fontWeight: 800, 
+              color: 'var(--primary)', 
+              outline: 'none',
+              fontFamily: 'inherit',
+              cursor: 'pointer'
+            }}
+          >
+            {plays.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
+          </select>
         </div>
         <button className="btn-add-record">＋ 기록</button>
       </header>
