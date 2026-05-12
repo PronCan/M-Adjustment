@@ -2,11 +2,35 @@ import { useAppStore } from '../../store/useAppStore';
 import { Card, Button } from '../ui';
 import { APP_CONFIG } from '../../config';
 import { downloadJson, readJsonFile, getBackupFilename } from '../../utils/backup';
-import { useRef } from 'react';
+import { fetchPlayDataFromSheets } from '../../utils/sheets';
+import { useRef, useState } from 'react';
 
 export function SettingsTab() {
-  const { settings, updateSettings, resetAll, restoreData } = useAppStore();
+  const { settings, updateSettings, resetAll, restoreData, syncPlaysFromSheets } = useAppStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSync = async () => {
+    if (!settings.sheetsUrl) {
+      alert('구글 시트 URL을 입력해주세요.');
+      return;
+    }
+    
+    setIsSyncing(true);
+    try {
+      const plays = await fetchPlayDataFromSheets(settings.sheetsUrl);
+      if (plays.length === 0) {
+        alert('시트에서 극 데이터를 찾을 수 없습니다.');
+        return;
+      }
+      syncPlaysFromSheets(plays);
+      alert('극 데이터가 성공적으로 업데이트되었습니다.');
+    } catch (error: any) {
+      alert(error.message || '데이터 연동 중 오류가 발생했습니다.');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const handleBackup = () => {
     const state = useAppStore.getState();
@@ -77,12 +101,32 @@ export function SettingsTab() {
 
       <Card label="📡 구글시트 연동">
         <div style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '12px', lineHeight: 1.6 }}>
-          {APP_CONFIG.title} 공연 일정 시트와 연결되어 있습니다.<br/>버튼을 눌러 최신 일정을 불러오세요.
+          극(작품) 데이터 시트와 연결하여 최신 정보를 불러옵니다.
         </div>
-        <Button variant="primary" size="full" onClick={() => {
-          // TODO: Implement Google Sheets fetch logic
-          alert('구글 시트 연동 기능은 설정 파일에 URL을 추가한 후 동작합니다.');
-        }}>🔄 일정 업데이트</Button>
+        <div className="form-group">
+          <input 
+            type="text" 
+            className="form-input" 
+            placeholder="구글 시트 공유 URL 입력"
+            value={settings.sheetsUrl}
+            onChange={(e) => updateSettings({ sheetsUrl: e.target.value })}
+            style={{ marginBottom: '8px' }}
+          />
+        </div>
+        <Button 
+          variant="primary" 
+          size="full" 
+          onClick={handleSync}
+          disabled={isSyncing}
+        >
+          {isSyncing ? '업데이트 중...' : '🔄 극 데이터 업데이트'}
+        </Button>
+        <div style={{ fontSize: '11px', color: 'var(--text2)', marginTop: '12px', lineHeight: 1.5, background: 'var(--surface2)', padding: '10px', borderRadius: '8px' }}>
+          <strong>💡 시트 설정 방법</strong><br/>
+          1. 구글 시트에 <code>Plays</code>, <code>Casts</code>, <code>Benefits</code> 시트를 만듭니다.<br/>
+          2. [파일] - [공유] - [웹에 게시]를 선택하여 전체 문서를 웹에 게시합니다.<br/>
+          3. 브라우저 주소창의 URL을 복사하여 위 칸에 붙여넣습니다.
+        </div>
       </Card>
 
       <Card label="💾 데이터 관리">

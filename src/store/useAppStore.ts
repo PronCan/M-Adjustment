@@ -88,6 +88,7 @@ export interface AppState {
   
   updateSettings: (settings: Partial<AppState['settings']>) => void;
   setShowSchedule: (data: any[]) => void;
+  syncPlaysFromSheets: (plays: PlayConfig[]) => void;
   
   resetAll: () => void;
   restoreData: (data: any) => void;
@@ -215,6 +216,12 @@ export const useAppStore = create<AppState>()(
       })),
       
       setShowSchedule: (data) => set({ showSchedule: data }),
+
+      syncPlaysFromSheets: (plays) => set((state) => {
+        // Merge or replace plays. Here we replace but keep activePlayId if it still exists.
+        const newActivePlayId = plays.find(p => p.id === state.activePlayId) ? state.activePlayId : (plays[0]?.id || null);
+        return { plays, activePlayId: newActivePlayId };
+      }),
 
       resetAll: () => set({
         plays: DEFAULT_PLAYS,
