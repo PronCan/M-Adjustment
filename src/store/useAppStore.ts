@@ -42,10 +42,17 @@ export interface RewatchCard {
 
 export interface CouponLog {
   id: string;
+  playId: string;
   date: string;
   type: 'forty' | 'fifty' | 'proofpass';
   delta: number;
   memo: string;
+}
+
+export interface PlayCoupons {
+  forty: number;
+  fifty: number;
+  proofpass: number;
 }
 
 export interface AppState {
@@ -53,11 +60,7 @@ export interface AppState {
   activePlayId: string | null;
   schedules: Schedule[];
   rewatchCards: RewatchCard[];
-  coupons: {
-    forty: number;
-    fifty: number;
-    proofpass: number;
-  };
+  coupons: Record<string, PlayCoupons>; // playId -> PlayCoupons
   couponLogs: CouponLog[];
   showSchedule: any[]; // 구글 시트 데이터
   settings: {
@@ -101,7 +104,7 @@ export const useAppStore = create<AppState>()(
       activePlayId: DEFAULT_PLAYS[0].id,
       schedules: [],
       rewatchCards: [],
-      coupons: { forty: 0, fifty: 0, proofpass: 0 },
+      coupons: {},
       couponLogs: [],
       showSchedule: [],
       settings: {
@@ -172,13 +175,18 @@ export const useAppStore = create<AppState>()(
       })),
 
       updateCoupon: (type, delta, memo) => set((state) => {
-        const newCount = Math.max(0, state.coupons[type] + delta);
-        const actualDelta = newCount - state.coupons[type];
+        if (!state.activePlayId) return state;
+        const playId = state.activePlayId;
+        const currentCoupons = state.coupons[playId] || { forty: 0, fifty: 0, proofpass: 0 };
+        
+        const newCount = Math.max(0, currentCoupons[type] + delta);
+        const actualDelta = newCount - currentCoupons[type];
         
         if (actualDelta === 0) return state;
 
         const log: CouponLog = {
           id: Date.now().toString(),
+          playId,
           date: new Date().toISOString().split('T')[0],
           type,
           delta: actualDelta,
@@ -186,26 +194,45 @@ export const useAppStore = create<AppState>()(
         };
 
         return {
-          coupons: { ...state.coupons, [type]: newCount },
+          coupons: { 
+            ...state.coupons, 
+            [playId]: { ...currentCoupons, [type]: newCount } 
+          },
           couponLogs: [log, ...state.couponLogs]
         };
       }),
 
       addCouponPack: (date, memo) => set((state) => {
+        if (!state.activePlayId) return state;
+        const playId = state.activePlayId;
+        const currentPlay = state.plays.find(p => p.id === playId);
+        const defaultPlay = DEFAULT_PLAYS.find(p => p.id === playId);
+        const currentCoupons = state.coupons[playId] || { forty: 0, fifty: 0, proofpass: 0 };
+        
+        // 극별 설정이 있으면 따르고, 없으면 기본값(1장씩) 사용
+        const packConfig = currentPlay?.couponPackConfig || defaultPlay?.couponPackConfig || { forty: 1, fifty: 1, proofpass: 1 };
+        
         const timestamp = Date.now();
-        const logs: CouponLog[] = ['forty', 'fifty', 'proofpass'].map((type, i) => ({
-          id: (timestamp + i).toString(),
-          date,
-          type: type as any,
-          delta: 1,
-          memo: memo || '쿠폰팩 추가'
-        }));
+        const logs: CouponLog[] = [];
+        
+        if (packConfig.forty > 0) {
+          logs.push({ id: `${timestamp}-40`, playId, date, type: 'forty', delta: packConfig.forty, memo: memo || '쿠폰팩 추가' });
+        }
+        if (packConfig.fifty > 0) {
+          logs.push({ id: `${timestamp}-50`, playId, date, type: 'fifty', delta: packConfig.fifty, memo: memo || '쿠폰팩 추가' });
+        }
+        if (packConfig.proofpass > 0) {
+          logs.push({ id: `${timestamp}-proof`, playId, date, type: 'proofpass', delta: packConfig.proofpass, memo: memo || '쿠폰팩 추가' });
+        }
 
         return {
           coupons: {
-            forty: state.coupons.forty + 1,
-            fifty: state.coupons.fifty + 1,
-            proofpass: state.coupons.proofpass + 1,
+            ...state.coupons,
+            [playId]: {
+              forty: currentCoupons.forty + packConfig.forty,
+              fifty: currentCoupons.fifty + packConfig.fifty,
+              proofpass: currentCoupons.proofpass + packConfig.proofpass,
+            }
           },
           couponLogs: [...logs, ...state.couponLogs]
         };
@@ -228,7 +255,7 @@ export const useAppStore = create<AppState>()(
         activePlayId: DEFAULT_PLAYS[0].id,
         schedules: [],
         rewatchCards: [],
-        coupons: { forty: 0, fifty: 0, proofpass: 0 },
+        coupons: {},
         couponLogs: [],
         showSchedule: [],
       }),

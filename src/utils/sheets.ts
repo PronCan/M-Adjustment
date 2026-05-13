@@ -82,11 +82,15 @@ export async function fetchPlayDataFromSheets(sheetsUrl: string): Promise<PlayCo
     const playsMap = new Map<string, PlayConfig>();
 
     // Parse Plays
-    // Header: id, title, layout
+    // Header: id, title, emoji, layout, packForty, packFifty, packProof
     const playsHeaders = playsData[0].map(h => h.trim().toLowerCase());
     const idIdx = playsHeaders.indexOf('id');
     const titleIdx = playsHeaders.indexOf('title');
+    const emojiIdx = playsHeaders.indexOf('emoji');
     const layoutIdx = playsHeaders.indexOf('layout');
+    const packFortyIdx = playsHeaders.indexOf('packforty');
+    const packFiftyIdx = playsHeaders.indexOf('packfifty');
+    const packProofIdx = playsHeaders.indexOf('packproof');
 
     for (let i = 1; i < playsData.length; i++) {
       const row = playsData[i];
@@ -95,13 +99,23 @@ export async function fetchPlayDataFromSheets(sheetsUrl: string): Promise<PlayCo
       const id = row[idIdx].trim();
       const layoutStr = row[layoutIdx]?.trim().toLowerCase();
       const layout = ['dream2', 'bugs', 'payco', 'none'].includes(layoutStr) ? layoutStr as any : 'none';
+      
+      const packForty = packFortyIdx >= 0 ? parseInt(row[packFortyIdx] || '1', 10) : 1;
+      const packFifty = packFiftyIdx >= 0 ? parseInt(row[packFiftyIdx] || '1', 10) : 1;
+      const packProof = packProofIdx >= 0 ? parseInt(row[packProofIdx] || '1', 10) : 1;
 
       playsMap.set(id, {
         id,
         title: row[titleIdx]?.trim() || '',
+        emoji: emojiIdx >= 0 ? row[emojiIdx]?.trim() : undefined,
         layout,
         cast: {},
-        rewatchBenefits: []
+        rewatchBenefits: [],
+        couponPackConfig: {
+          forty: isNaN(packForty) ? 1 : packForty,
+          fifty: isNaN(packFifty) ? 1 : packFifty,
+          proofpass: isNaN(packProof) ? 1 : packProof
+        }
       });
     }
 
