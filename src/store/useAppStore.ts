@@ -30,6 +30,7 @@ export interface Stamp {
   memo: string;
   hasReceipt: boolean;
   qty: number;
+  status?: '완료' | '예정';
 }
 
 export interface RewatchCard {
