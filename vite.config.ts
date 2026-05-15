@@ -39,5 +39,5 @@ export default defineConfig({
       }
     })
   ],
-  base: '/adjust/', // For GitHub Pages (assuming the same repo name or change later)
+  base: '/M-Adjustment/', // For GitHub Pages
 });
