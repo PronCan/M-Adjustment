@@ -10,15 +10,15 @@ export function StatsTab() {
         <Heatmap />
       </Card>
       
-      <SecTitle> 캐스트별 관람 횟수</SecTitle>
+      {/* <SecTitle> 캐스트별 관람 횟수</SecTitle>
       <Card>
         <div className="empty"><div className="empty-icon">🎭</div><p>기록이 없습니다</p></div>
-      </Card>
+      </Card> */}
       
-      <SecTitle>👫 페어 조합별 관람</SecTitle>
+      {/* <SecTitle>👫 페어 조합별 관람</SecTitle>
       <Card>
         <div className="empty"><div className="empty-icon">👫</div><p>기록이 없습니다</p></div>
-      </Card>
+      </Card> */}
     </div>
   );
 }

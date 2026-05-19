@@ -9,16 +9,46 @@ import { SettingsTab } from './tabs/SettingsTab';
 import { Button } from './ui';
 
 function App() {
-  const { settings, updateSettings, plays, activePlayId, setActivePlayId, addPlay, deletePlay } = useAppStore();
+  const { settings, updateSettings, plays, activePlayId, setActivePlayId, addPlay, updatePlay, deletePlay } = useAppStore();
   const [showAddPlayModal, setShowAddPlayModal] = useState(false);
   const [showPlaysListModal, setShowPlaysListModal] = useState(false);
+  const [editingPlayId, setEditingPlayId] = useState<string | null>(null);
   const [newPlayTitle, setNewPlayTitle] = useState('');
+  const [playLayout, setPlayLayout] = useState<'dream2' | 'bugs' | 'payco' | 'none'>('none');
   const [hasForty, setHasForty] = useState(false);
   const [hasFifty, setHasFifty] = useState(false);
   const [packForty, setPackForty] = useState(1);
   const [packFifty, setPackFifty] = useState(1);
   const [packProof, setPackProof] = useState(1);
   useDarkMode();
+
+  const openAddPlayModal = () => {
+    setEditingPlayId(null);
+    setNewPlayTitle('');
+    setPlayLayout('none');
+    setHasForty(false);
+    setHasFifty(false);
+    setPackForty(1);
+    setPackFifty(1);
+    setPackProof(1);
+    setShowAddPlayModal(true);
+  };
+
+  const openEditPlayModal = (playId: string) => {
+    const play = plays.find(p => p.id === playId);
+    if (!play) return;
+
+    setEditingPlayId(play.id);
+    setNewPlayTitle(play.title);
+    setPlayLayout(play.layout);
+    setHasForty(play.rewatchBenefits.some(b => b.label.includes('40%')));
+    setHasFifty(play.rewatchBenefits.some(b => b.label.includes('50%')));
+    setPackForty(play.couponPackConfig?.forty ?? 1);
+    setPackFifty(play.couponPackConfig?.fifty ?? 1);
+    setPackProof(play.couponPackConfig?.proofpass ?? 1);
+    setShowPlaysListModal(false);
+    setShowAddPlayModal(true);
+  };
 
   const handleAddPlaySubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,23 +57,28 @@ function App() {
       if (hasForty) benefits.push({ count: 3, label: '40% 할인권' });
       if (hasFifty) benefits.push({ count: 6, label: '50% 할인권' });
 
-      const newPlay = {
-        id: `play-${Date.now()}`,
-        title: newPlayTitle.trim(),
-        layout: 'none' as const,
-        cast: {},
-        rewatchBenefits: benefits,
-        couponPackConfig: { forty: packForty, fifty: packFifty, proofpass: packProof }
-      };
-      addPlay(newPlay);
-      setActivePlayId(newPlay.id);
+      if (editingPlayId) {
+        updatePlay(editingPlayId, {
+          title: newPlayTitle.trim(),
+          layout: playLayout,
+          rewatchBenefits: benefits,
+          couponPackConfig: { forty: packForty, fifty: packFifty, proofpass: packProof }
+        });
+      } else {
+        const newPlay = {
+          id: `play-${Date.now()}`,
+          title: newPlayTitle.trim(),
+          layout: playLayout,
+          cast: {},
+          rewatchBenefits: benefits,
+          couponPackConfig: { forty: packForty, fifty: packFifty, proofpass: packProof }
+        };
+        addPlay(newPlay);
+        setActivePlayId(newPlay.id);
+      }
+      
       setShowAddPlayModal(false);
-      setNewPlayTitle('');
-      setHasForty(false);
-      setHasFifty(false);
-      setPackForty(1);
-      setPackFifty(1);
-      setPackProof(1);
+      setEditingPlayId(null);
     }
   };
 
@@ -99,7 +134,7 @@ function App() {
         >
           작품 목록
         </button>
-        <button className="btn-add-record" onClick={() => setShowAddPlayModal(true)}>＋ 작품 추가</button>
+        <button className="btn-add-record" onClick={openAddPlayModal}>＋ 작품 추가</button>
       </header>
 
       <main className="main-content">
@@ -150,7 +185,9 @@ function App() {
             background: 'var(--surface)', padding: '24px', borderRadius: 'var(--radius-md)',
             width: '100%', maxWidth: '320px', boxShadow: 'var(--shadow)'
           }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: '18px', color: 'var(--text)' }}>새 작품 추가</h3>
+            <h3 style={{ margin: '0 0 16px', fontSize: '18px', color: 'var(--text)' }}>
+              {editingPlayId ? '작품 수정' : '새 작품 추가'}
+            </h3>
             <form onSubmit={handleAddPlaySubmit}>
               <div className="form-group">
                 <label className="form-label">작품 이름</label>
@@ -163,7 +200,20 @@ function App() {
                   autoFocus
                 />
               </div>
-              <div className="form-group">
+              <div className="form-group" style={{ marginTop: '16px' }}>
+                <label className="form-label">공연장 (좌석 배치도)</label>
+                <select 
+                  className="form-input" 
+                  value={playLayout}
+                  onChange={(e) => setPlayLayout(e.target.value as any)}
+                >
+                  <option value="none">선택 안함</option>
+                  <option value="dream2">드림아트센터 2관</option>
+                  <option value="bugs">벅스홀 (구 링크아트센터)</option>
+                  <option value="payco">페이코홀 (구 링크아트센터)</option>
+                </select>
+              </div>
+              <div className="form-group" style={{ marginTop: '16px' }}>
                 <label className="form-label">재관람 혜택</label>
                 <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
@@ -202,8 +252,10 @@ function App() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px', marginTop: '24px' }}>
-                <Button type="button" variant="secondary" size="full" onClick={() => setShowAddPlayModal(false)}>취소</Button>
-                <Button type="submit" variant="primary" size="full" disabled={!newPlayTitle.trim()}>추가</Button>
+                <Button type="button" variant="secondary" size="full" onClick={() => { setShowAddPlayModal(false); setEditingPlayId(null); }}>취소</Button>
+                <Button type="submit" variant="primary" size="full" disabled={!newPlayTitle.trim()}>
+                  {editingPlayId ? '저장' : '추가'}
+                </Button>
               </div>
             </form>
           </div>
@@ -239,6 +291,12 @@ function App() {
                       style={{ background: 'var(--primary)', color: 'var(--bg)', border: 'none', padding: '4px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
                     >
                       선택
+                    </button>
+                    <button 
+                      onClick={() => openEditPlayModal(p.id)}
+                      style={{ background: 'var(--surface2)', color: 'var(--text)', border: '1px solid var(--border)', padding: '4px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      수정
                     </button>
                     <button 
                       onClick={() => { 
