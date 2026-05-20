@@ -35,6 +35,8 @@ export function SettingsTab() {
   const handleBackup = () => {
     const state = useAppStore.getState();
     const dataToBackup = {
+      plays: state.plays,
+      activePlayId: state.activePlayId,
       schedules: state.schedules,
       rewatchCards: state.rewatchCards,
       coupons: state.coupons,

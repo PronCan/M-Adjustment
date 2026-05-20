@@ -411,9 +411,9 @@
   margin: 8px 0;
 }
 
-.hm-0 { background: transparent; color: transparent; }
-.hm-1 { background: var(--surface2); color: var(--success); border-color: var(--primary); }
-.hm-2 { background: var(--border); color: var(--text); border-color: var(--accent); }
-.hm-3 { background: var(--primary); color: var(--surface); border-color: var(--success); }
-.hm-4 { background: var(--success); color: var(--surface); border-color: var(--text); }
-.hm-5plus { background: var(--text); color: var(--surface); border-color: #000; }
+.hm-0 { background: transparent; color: var(--border); border-color: var(--border); }
+.hm-1 { background: var(--surface2); color: var(--primary); border-color: var(--primary); }
+.hm-2 { background: var(--border); color: var(--accent); border-color: var(--accent); }
+.hm-3 { background: var(--primary); color: var(--success); border-color: var(--success); }
+.hm-4 { background: var(--success); color: var(--text); border-color: var(--text); }
+.hm-5plus { background: var(--text); color: #000; border-color: #000; }

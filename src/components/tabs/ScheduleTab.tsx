@@ -94,7 +94,7 @@ export function ScheduleTab() {
         className="mb-3"
         onClick={() => setShowAddModal(true)}
       >
-        ➕ 관극 일정 추가
+        + 관극 일정 추가
       </Button>
 
       <SecTitle>🗓 다가오는 일정</SecTitle>
